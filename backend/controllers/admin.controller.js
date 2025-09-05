@@ -1,5 +1,5 @@
-import Chef from '../models/Chef.js';
-import Order from '../models/Order.js';
+import Chef from '../models/Chef.model.js';
+import Order from '../models/Order.model.js';
 
 const getAllChefs = async (req, res) => {
     try {

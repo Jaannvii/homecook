@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/home.css';
 
 import Navbar from '../components/Navbar.jsx';
 
@@ -28,29 +29,23 @@ const MainPage = () => {
     }, [API_URL]);
 
     return (
-        <div className="bg-light">
+        <div className="bgColor">
             <Navbar />
 
             <section className="hero-section text-center d-flex align-items-center">
                 <div className="container">
-                    <h1 className="display-4 fw-bold text-dark mb-3">
+                    <h1 className="title display-4 fw-bold text-shadow">
                         Fresh Home-Cooked Meals, Delivered to You
                     </h1>
-                    <p className="lead text-muted mb-4">
+                    <p className="lead mt-3 text-shadow title">
                         Enjoy delicious homemade food from local chefs near you.
                     </p>
-                    <button
-                        className="btn btn-primary btn-lg"
-                        onClick={() => navigate('/auth/register')}
-                    >
-                        Order Now
-                    </button>
                 </div>
             </section>
 
-            <section id="categories" className="py-5">
+            <section id="meal" className="py-5">
                 <div className="container">
-                    <h2 className="text-center mb-5 fw-bold">
+                    <h2 className="text-center mb-5 fw-bold title">
                         Explore Meal Categories
                     </h2>
                     <div className="row">
@@ -65,16 +60,18 @@ const MainPage = () => {
                         ) : categories.length > 0 ? (
                             categories.map((cat) => (
                                 <div className="col-md-3 mb-4" key={cat._id}>
-                                    <div className="card shadow h-100">
+                                    <div className="card category-card shadow h-100">
                                         <img
                                             src={cat.categoryImage}
                                             className="card-img-top"
                                             alt={cat.categoryName}
                                         />
                                         <div className="card-body text-center">
-                                            <h5>{cat.categoryName}</h5>
+                                            <h5 className="title">
+                                                {cat.categoryName}
+                                            </h5>
                                             <button
-                                                className="btn btn-outline-primary btn-sm mt-2"
+                                                className="btn btn-outline-primary btn-sm"
                                                 onClick={() =>
                                                     navigate(
                                                         `/meals?category=${cat._id}`
@@ -96,9 +93,9 @@ const MainPage = () => {
                 </div>
             </section>
 
-            <section id="about" className="py-5 bg-white">
+            <section id="about" className="py-5">
                 <div className="container text-center">
-                    <h2 className="fw-bold mb-4">About Us</h2>
+                    <h2 className="fw-bold mb-3 title">About Us</h2>
                     <p className="mb-2">
                         Our platform connects food lovers with talented home
                         chefs.
@@ -111,7 +108,9 @@ const MainPage = () => {
                         <div className="col-md-4">
                             <div className="card shadow h-100">
                                 <div className="card-body">
-                                    <h5>🍲 Homemade Goodness</h5>
+                                    <h5 className="title">
+                                        🍲 Homemade Goodness
+                                    </h5>
                                     <p className="mb-0">
                                         Authentic recipes made fresh in home
                                         kitchens.
@@ -122,7 +121,7 @@ const MainPage = () => {
                         <div className="col-md-4">
                             <div className="card shadow h-100">
                                 <div className="card-body">
-                                    <h5>🚚 Quick Delivery</h5>
+                                    <h5 className="title">🚚 Quick Delivery</h5>
                                     <p className="mb-0">
                                         Get your meal hot and fresh, right on
                                         time.
@@ -133,7 +132,7 @@ const MainPage = () => {
                         <div className="col-md-4">
                             <div className="card shadow h-100">
                                 <div className="card-body">
-                                    <h5>✅ Trusted Chefs</h5>
+                                    <h5 className="title">✅ Trusted Chefs</h5>
                                     <p className="mb-0">
                                         Verified home chefs ensure hygiene &
                                         taste.
@@ -147,7 +146,7 @@ const MainPage = () => {
 
             <section id="contact" className="py-5">
                 <div className="container text-center">
-                    <h2 className="fw-bold mb-3">Contact Us</h2>
+                    <h2 className="fw-bold mb-3 title">Contact Us</h2>
                     <p>Email: support@homecook.com | Phone: +91 9876543210</p>
                 </div>
             </section>

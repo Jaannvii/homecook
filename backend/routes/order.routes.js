@@ -14,7 +14,7 @@ router.post('/create', isLoggedIn, authorize('User'), createOrder);
 router.get('/', isLoggedIn, authorize('User'), getUserOrders);
 router.get('/:id', isLoggedIn, getOrderById);
 router.put(
-    '/update/:id',
+    '/:id/status',
     isLoggedIn,
     authorize('Admin', 'Chef'),
     updateOrderStatus

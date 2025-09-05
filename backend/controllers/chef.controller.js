@@ -1,16 +1,4 @@
-import Chef from '../models/Chef.js';
-
-const getAllChefs = async (req, res) => {
-    try {
-        const chefs = await Chef.find().select('-password');
-        res.status(201).json({ message: 'Chefs fetched successfully', chefs });
-    } catch (err) {
-        res.status(500).json({
-            message: 'Server error while fetching chefs',
-            error: err.message,
-        });
-    }
-};
+import Chef from '../models/Chef.model.js';
 
 const getChefById = async (req, res) => {
     try {
@@ -95,10 +83,4 @@ const deleteChef = async (req, res) => {
     }
 };
 
-export {
-    getAllChefs,
-    getChefById,
-    getChefProfile,
-    updateChefProfile,
-    deleteChef,
-};
+export { getChefById, getChefProfile, updateChefProfile, deleteChef };

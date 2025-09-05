@@ -1,5 +1,5 @@
-import Payment from '../models/Payment.js';
-import Order from '../models/Order.js';
+import Payment from '../models/Payment.model.js';
+import Order from '../models/Order.model.js';
 
 const createPayment = async (req, res) => {
     try {

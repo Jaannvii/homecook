@@ -1,0 +1,33 @@
+.bgColor {
+    background-color: #ffe0bd;
+    min-height: 100vh;
+}
+
+.title {
+    color: #502906 !important;
+}
+
+.navbar-link:hover {
+    color: #351a00;
+}
+
+.navbar {
+    border-bottom: 2px solid #cccccc;
+}
+
+.hero-section {
+    background: url('../images/home.jpg') center/cover no-repeat;
+    height: 90vh;
+}
+
+.text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.category-card {
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+}

@@ -5,6 +5,11 @@ import db from './config/db.js';
 import cookieParser from 'cookie-parser';
 
 import userRouter from './routes/auth.routes.js';
+import menuRouter from './routes/menu.routes.js';
+import chefRouter from './routes/chef.routes.js';
+import orderRouter from './routes/order.routes.js';
+import paymentRouter from './routes/payment.routes.js';
+import adminRouter from './routes/admin.routes.js';
 
 dotenv.config();
 
@@ -26,6 +31,11 @@ app.use(cookieParser());
 db();
 
 app.use('/api/homecook/auth', userRouter);
+app.use('/api/homecook/menu', menuRouter);
+app.use('/api/homecook/chef', chefRouter);
+app.use('/api/homecook/order', orderRouter);
+app.use('/api/homecook/payment', paymentRouter);
+app.use('/api/homecook/admin', adminRouter);
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);

@@ -15,12 +15,7 @@ router.get('/', getMenus);
 router.get('/:id', getMenuById);
 router.get('/chef/:chefId', getMenusByChef);
 router.post('/create', isLoggedIn, authorize('Chef'), createMenu);
-router.put('/update/:id', isLoggedIn, authorize('Chef', 'Admin'), updateMenu);
-router.delete(
-    '/delete/:id',
-    isLoggedIn,
-    authorize('Chef', 'Admin'),
-    deleteMenu
-);
+router.put('/update/:id', isLoggedIn, authorize('Chef'), updateMenu);
+router.delete('/delete/:id', isLoggedIn, authorize('Chef'), deleteMenu);
 
 export default router;

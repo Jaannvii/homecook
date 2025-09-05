@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { register } from '../services/authService.js';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import '../styles/auth.css';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -9,100 +10,100 @@ const Register = () => {
         password: '',
         role: 'User',
     });
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const [message, setMessage] = useState('');
+    const [success, setSuccess] = useState(false);
 
-    const handleRegister = async (e) => {
+    const handleChange = (e) =>
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
         try {
-            await register(formData);
-            alert('Registration successful!');
-            setTimeout(() => navigate('/auth/login'), 3000);
+            const res = await register(formData);
+            console.log('Response:', res);
+            if (res.data.message && res.data) {
+                setMessage(res.data.message);
+                setSuccess(true);
+            }
         } catch (err) {
-            alert(err.response?.data?.message || 'Registration failed');
-        } finally {
-            setLoading(false);
+            console.error('Registration error:', err);
+            setMessage(err.response?.data?.message || 'Registration failed');
+            setSuccess(false);
         }
     };
 
     return (
-        <div className="flex justify-center items-center min-h-[80vh] bg-gray-50">
-            <form
-                onSubmit={handleRegister}
-                className="bg-white p-8 rounded-2xl shadow-lg w-96"
+        <div className="container-fluid auth-bg d-flex justify-content-center align-items-center min-vh-100">
+            <div
+                className="card shadow auth-card"
+                style={{ width: '100%', maxWidth: '400px' }}
             >
-                <h2 className="text-3xl font-bold text-center text-green-600 mb-6">
-                    Create an Account
-                </h2>
-
-                <input
-                    type="text"
-                    placeholder="Full Name"
-                    className="w-full p-3 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-400"
-                    value={formData.name}
-                    onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    className="w-full p-3 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-400"
-                    value={formData.email}
-                    onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                    }
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    className="w-full p-3 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-400"
-                    value={formData.password}
-                    onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                    }
-                    required
-                />
-
-                <select
-                    className="w-full p-3 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-green-400"
-                    value={formData.role}
-                    onChange={(e) =>
-                        setFormData({ ...formData, role: e.target.value })
-                    }
-                >
-                    <option value="user">User</option>
-                    <option value="chef">Chef</option>
-                    <option value="chef">Admin</option>
-                </select>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full py-2 rounded-md text-white font-semibold ${
-                        loading
-                            ? 'bg-green-400'
-                            : 'bg-green-600 hover:bg-green-700'
-                    } transition`}
-                >
-                    {loading ? 'Registering...' : 'Register'}
-                </button>
-
-                <p className="mt-4 text-center text-gray-600">
-                    Already have an account?{' '}
-                    <Link
-                        to="/auth/login"
-                        className="text-green-600 hover:underline"
+                <h2 className="text-center mb-4 auth-title">Register</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <input
+                            type="text"
+                            name="name"
+                            className="form-control"
+                            placeholder="Name"
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <input
+                            type="email"
+                            name="email"
+                            className="form-control"
+                            placeholder="Email"
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <input
+                            type="password"
+                            name="password"
+                            className="form-control"
+                            placeholder="Password"
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <select
+                            name="role"
+                            className="form-select"
+                            onChange={handleChange}
+                        >
+                            <option value="User">User</option>
+                            <option value="Chef">Chef</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                    <button
+                        type="submit"
+                        className="btn btn-primary w-100 mb-2"
                     >
-                        Login
-                    </Link>
-                </p>
-            </form>
+                        Register
+                    </button>
+                    <div className="text-center">
+                        <Link to="/auth/login" className="custom-link">
+                            Already have an account? Login
+                        </Link>
+                    </div>
+                    {message && (
+                        <p
+                            className={`text-center ${
+                                success ? 'text-success' : 'text-danger'
+                            } mt-3`}
+                        >
+                            {message}
+                        </p>
+                    )}
+                </form>
+            </div>
         </div>
     );
 };
-
 export default Register;

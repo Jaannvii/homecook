@@ -2,52 +2,27 @@ import mongoose from 'mongoose';
 
 const chefSchema = new mongoose.Schema(
     {
-        name: {
-            type: String,
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: true,
+            unique: true,
+        },
+        contactNumber: {
+            type: String,
+            required: false,
             trim: true,
         },
-        email: {
-            type: String,
-            required: true,
-            unique: true,
-            lowercase: true,
-        },
-        phone: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-        specialty: {
-            type: [String],
-            default: [],
-        },
-        experience: {
-            type: Number,
-        },
         address: {
-            street: String,
-            city: String,
-            state: String,
-            pincode: String,
+            street: { type: String, required: false },
+            city: { type: String, required: false },
+            state: { type: String, required: false },
+            postalCode: { type: String, required: false },
+            country: { type: String, required: false },
         },
-        isAvailable: {
+        isVerified: {
             type: Boolean,
             default: true,
-        },
-        rating: {
-            type: Number,
-            default: 0,
-            min: 0,
-            max: 5,
-        },
-        profilePic: {
-            type: String,
-            default: '',
         },
     },
     { timestamps: true }
