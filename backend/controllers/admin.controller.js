@@ -1,12 +1,15 @@
 import Chef from '../models/Chef.model.js';
 import Order from '../models/Order.model.js';
+import Menu from '../models/Menu.model.js';
 
 const getAllChefs = async (req, res) => {
     try {
         const chefs = await Chef.find();
-        res.status(201).json({ message: 'Chefs fetched successfully', chefs });
+        return res
+            .status(201)
+            .json({ message: 'Chefs fetched successfully', chefs });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while fetching chefs',
             error: err.message,
         });
@@ -15,20 +18,37 @@ const getAllChefs = async (req, res) => {
 
 const verifyChef = async (req, res) => {
     try {
-        const chef = await Chef.findById(req.params.id);
+        const chefId = req.params.chefId;
+        const chef = await Chef.findById(chefId);
         if (!chef) return res.status(404).json({ message: 'Chef not found' });
 
-        chef.isAvailable = req.body.isAvailable;
-        const updatedChef = await chef.save();
-        res.status(201).json({
+        chef.isVerified = true;
+        await chef.save();
+        return res.status(200).json({
             message: 'Chef verified successfully',
-            chef: updatedChef,
+            chef,
         });
     } catch (err) {
-        res.status(500).json({
-            message: 'Server error while verifying chef',
+        return res.status(500).json({
+            message: 'Server error',
             error: err.message,
         });
+    }
+};
+
+const approveMenu = async (req, res) => {
+    try {
+        const menuId = req.params.menuId;
+        const menu = await Menu.findById(menuId);
+        if (!menu) return res.status(404).json({ message: 'Menu not found' });
+        menu.isApproved = true;
+        await menu.save();
+        return res.status(200).json({ message: 'Menu approved', menu });
+    } catch (err) {
+        console.error('Error approving menu:', err);
+        return res
+            .status(500)
+            .json({ message: 'Server error', error: err.message });
     }
 };
 
@@ -37,16 +57,16 @@ const getAllOrders = async (req, res) => {
         const orders = await Order.find()
             .populate('customer', 'name email')
             .populate('items.food', 'itemName');
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Orders fetched successfully',
             orders,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while fetching orders',
             error: err.message,
         });
     }
 };
 
-export { getAllChefs, verifyChef, getAllOrders };
+export { getAllChefs, verifyChef, approveMenu, getAllOrders };

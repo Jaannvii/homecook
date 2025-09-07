@@ -13,12 +13,12 @@ const createOrder = async (req, res) => {
         });
 
         await newOrder.save();
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Order created successfully',
             order: newOrder,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while creating order',
             error: err.message,
         });
@@ -31,12 +31,12 @@ const getUserOrders = async (req, res) => {
             'items.food',
             'itemName price'
         );
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Orders fetched successfully',
             orders,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while fetching orders',
             error: err.message,
         });
@@ -57,9 +57,11 @@ const getOrderById = async (req, res) => {
                 .json({ message: 'You are not authorized to view this order' });
         }
 
-        res.status(201).json({ message: 'Order fetched successfully', order });
+        return res
+            .status(201)
+            .json({ message: 'Order fetched successfully', order });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while fetching order',
             error: err.message,
         });
@@ -82,12 +84,12 @@ const updateOrderStatus = async (req, res) => {
         order.status = status || order.status;
 
         const updatedOrder = await order.save();
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Order status updated successfully',
             order: updatedOrder,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while updating order status',
             error: err.message,
         });
@@ -106,9 +108,9 @@ const deleteOrder = async (req, res) => {
         }
 
         await order.deleteOne();
-        res.status(201).json({ message: 'Order deleted successfully' });
+        return res.status(201).json({ message: 'Order deleted successfully' });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while deleting order',
             error: err.message,
         });

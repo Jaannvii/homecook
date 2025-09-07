@@ -10,7 +10,7 @@ const register = async (req, res) => {
         const { name, email, password, role } = req.body;
 
         if (!name || !password || !email) {
-            res.status(400).json({ message: 'All fields are required' });
+            return res.status(400).json({ message: 'All fields are required' });
         }
 
         if (password.length < 6) {
@@ -37,6 +37,7 @@ const register = async (req, res) => {
         if (role === 'Chef') {
             const chef = await Chef.create({
                 userId: user._id,
+                name: name,
                 contactNumber: '',
                 address: {
                     street: '',
@@ -52,8 +53,6 @@ const register = async (req, res) => {
                     .status(400)
                     .json({ message: 'Error creating artisan profile' });
             }
-
-            await chef.save();
         }
         const token = crypto.randomBytes(20).toString('hex');
         user.verificationToken = token;
@@ -65,7 +64,10 @@ const register = async (req, res) => {
             user,
         });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        console.error('Error in register:', err);
+        return res
+            .status(500)
+            .json({ message: 'Server error', error: err.message });
     }
 };
 
@@ -112,7 +114,7 @@ const login = async (req, res) => {
             },
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Error logging in user',
             error: err.message,
         });
@@ -129,7 +131,7 @@ const getProfile = async (req, res) => {
         if (!req.user) {
             return res.status(401).json({ message: 'Not Authenticated' });
         }
-        res.status(200).json({
+        return res.status(200).json({
             user: {
                 id: req.user._id,
                 name: req.user.name,
@@ -138,7 +140,9 @@ const getProfile = async (req, res) => {
             },
         });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        return res
+            .status(500)
+            .json({ message: 'Server error', error: err.message });
     }
 };
 

@@ -8,6 +8,11 @@ const chefSchema = new mongoose.Schema(
             required: true,
             unique: true,
         },
+        name: {
+            type: String,
+            required: false,
+            trim: true,
+        },
         contactNumber: {
             type: String,
             required: false,
@@ -22,7 +27,7 @@ const chefSchema = new mongoose.Schema(
         },
         isVerified: {
             type: Boolean,
-            default: true,
+            default: false,
         },
     },
     { timestamps: true }

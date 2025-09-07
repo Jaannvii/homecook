@@ -1,4 +1,5 @@
 import Menu from '../models/Menu.model.js';
+import Chef from '../models/Chef.model.js';
 
 const createMenu = async (req, res) => {
     try {
@@ -11,23 +12,60 @@ const createMenu = async (req, res) => {
             imageUrl,
         } = req.body;
 
+        const chef = await Chef.findOne({ userId: req.user._id });
+        if (!chef) {
+            return res.status(400).json({ message: 'Chef profile not found' });
+        }
+
+        if (!chef.name || !chef.contactNumber || !chef.address) {
+            return res.status(400).json({
+                message:
+                    'Chef profile is incomplete. Please update your profile before creating menu.',
+            });
+        }
+
+        if (!chef.isVerified) {
+            return res.status(403).json({
+                message: 'Chef is not verified. Cannot create menu.',
+            });
+        }
+
+        if (!itemName || price === undefined || !category) {
+            return res
+                .status(400)
+                .json({ message: 'Name, price and category are required' });
+        }
+
+        if (typeof price !== 'number' || price < 0) {
+            return res
+                .status(400)
+                .json({ message: 'Price must be a non-negative number' });
+        }
+
+        if (imageUrl && !imageUrl.startsWith('http')) {
+            return res
+                .status(400)
+                .json({ message: 'Image URL should be valid' });
+        }
+
         const newMenu = new Menu({
             itemName,
             description,
             price,
             category,
-            isAvailable,
+            isAvailable: isAvailable ?? true,
             imageUrl,
-            chefId: req.user.id,
+            chefId: chef._id,
+            isApproved: false,
         });
 
         await newMenu.save();
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Menu created successfully',
             menu: newMenu,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while creating menu',
             error: err.message,
         });
@@ -36,10 +74,21 @@ const createMenu = async (req, res) => {
 
 const getMenus = async (req, res) => {
     try {
-        const menus = await Menu.find().populate('chefId', 'name email');
-        res.status(201).json({ message: 'Menus fetched successfully', menus });
+        const filter = { isApproved: true };
+        if (req.user?._id && req.user.role === 'Chef') {
+            const chef = await Chef.findOne({ userId: req.user._id });
+            if (!chef) {
+                return res.status(400).json({ message: 'Chef not found' });
+            }
+            filter.chefId = chef._id;
+        }
+
+        const menus = await Menu.find(filter).populate('chefId', 'name email');
+        return res
+            .status(200)
+            .json({ message: 'Menus fetched successfully', menus });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while fetching menus',
             error: err.message,
         });
@@ -54,9 +103,11 @@ const getMenuById = async (req, res) => {
         );
         if (!menu) return res.status(404).json({ message: 'Menu not found' });
 
-        res.status(201).json({ message: 'Menu fetched successfully', menu });
+        return res
+            .status(201)
+            .json({ message: 'Menu fetched successfully', menu });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while fetching menu',
             error: err.message,
         });
@@ -75,9 +126,28 @@ const getMenusByChef = async (req, res) => {
                 .json({ message: 'No menus found for this chef' });
         }
 
-        res.status(201).json({ message: 'Menus fetched successfully', menus });
+        return res
+            .status(201)
+            .json({ message: 'Menus fetched successfully', menus });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        return res
+            .status(500)
+            .json({ message: 'Server error', error: err.message });
+    }
+};
+
+const getCategories = async (req, res) => {
+    try {
+        const categories = await Menu.aggregate([
+            { $match: { isApproved: true } },
+            { $group: { _id: '$category', count: { $sum: 1 } } },
+        ]);
+        return res.status(200).json(categories);
+    } catch (err) {
+        return res.status(500).json({
+            message: 'Error fetching categories',
+            error: err.message,
+        });
     }
 };
 
@@ -110,12 +180,12 @@ const updateMenu = async (req, res) => {
         menu.imageUrl = imageUrl || menu.imageUrl;
 
         const updatedMenu = await menu.save();
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Menu updated successfully',
             menu: updatedMenu,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while updating menu',
             error: err.message,
         });
@@ -135,9 +205,9 @@ const deleteMenu = async (req, res) => {
         }
 
         await menu.deleteOne();
-        res.status(201).json({ message: 'Menu removed successfully' });
+        return res.status(201).json({ message: 'Menu removed successfully' });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while deleting menu',
             error: err.message,
         });
@@ -149,6 +219,7 @@ export {
     getMenus,
     getMenusByChef,
     getMenuById,
+    getCategories,
     updateMenu,
     deleteMenu,
 };

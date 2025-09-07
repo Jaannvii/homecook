@@ -26,12 +26,12 @@ const createPayment = async (req, res) => {
         });
 
         await newPayment.save();
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Payment created successfully',
             payment: newPayment,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while creating payment',
             error: err.message,
         });
@@ -44,12 +44,12 @@ const getUserPayments = async (req, res) => {
             'orderId',
             'totalPrice status'
         );
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Payments fetched successfully',
             payments,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while fetching payments',
             error: err.message,
         });
@@ -71,12 +71,12 @@ const getPaymentById = async (req, res) => {
             });
         }
 
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Payment fetched successfully',
             payment,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while fetching payment',
             error: err.message,
         });
@@ -101,12 +101,12 @@ const updatePaymentStatus = async (req, res) => {
         payment.transactionId = transactionId || payment.transactionId;
 
         const updatedPayment = await payment.save();
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Payment status updated successfully',
             payment: updatedPayment,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while updating payment status',
             error: err.message,
         });
@@ -128,12 +128,12 @@ const refundPayment = async (req, res) => {
         payment.status = 'Refunded';
         const refundedPayment = await payment.save();
 
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Payment refunded successfully',
             payment: refundedPayment,
         });
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Server error while refunding payment',
             error: err.message,
         });

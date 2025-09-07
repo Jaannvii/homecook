@@ -36,6 +36,14 @@ const menuSchema = new mongoose.Schema(
             ref: 'Chef',
             required: true,
         },
+        isApproved: {
+            type: Boolean,
+            default: false,
+        },
+        isAvailable: {
+            type: Boolean,
+            default: true,
+        },
     },
     { timestamps: true }
 );

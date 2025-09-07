@@ -38,16 +38,16 @@ const ChefDashboard = () => {
             const res = await axios.get(`${API_URL}/chef/profile`, {
                 withCredentials: true,
             });
-            setProfile(res.data);
+            setProfile(res.data.chef);
             setFormData({
-                name: res.data.name || '',
-                contactNumber: res.data.contactNumber || '',
+                name: res.data.chef.name || '',
+                contactNumber: res.data.chef.contactNumber || '',
                 address: {
-                    street: res.data.address?.street || '',
-                    city: res.data.address?.city || '',
-                    state: res.data.address?.state || '',
-                    postalCode: res.data.address?.postalCode || '',
-                    country: res.data.address?.country || '',
+                    street: res.data.chef.address?.street || '',
+                    city: res.data.chef.address?.city || '',
+                    state: res.data.chef.address?.state || '',
+                    postalCode: res.data.chef.address?.postalCode || '',
+                    country: res.data.chef.address?.country || '',
                 },
             });
         } catch (err) {
@@ -60,7 +60,7 @@ const ChefDashboard = () => {
             const res = await axios.get(`${API_URL}/menu/`, {
                 withCredentials: true,
             });
-            setMenus(res.data);
+            setMenus(res.data.menus);
         } catch (err) {
             console.error('Error fetching menus:', err);
         }
@@ -74,8 +74,7 @@ const ChefDashboard = () => {
         };
 
         try {
-            const chefId = profile._id;
-            await axios.put(`${API_URL}/chef/update/${chefId}`, payload, {
+            await axios.put(`${API_URL}/chef/update`, payload, {
                 withCredentials: true,
             });
             setProfileMessage('Profile updated successfully!');
@@ -87,23 +86,50 @@ const ChefDashboard = () => {
     };
 
     const createMenu = async () => {
+        if (
+            !menuData.itemName ||
+            !menuData.description ||
+            !menuData.price ||
+            !menuData.category ||
+            !menuData.imageUrl
+        ) {
+            setMenuMessage('Please fill all required fields.');
+            return;
+        }
+
         const payload = {
-            itemName: menuData.itemName,
-            description: menuData.description,
-            price: menuData.price,
-            category: menuData.category,
-            imageUrl: menuData.imageUrl,
+            itemName: menuData.itemName.trim(),
+            description: menuData.description.trim(),
+            price: Number(menuData.price),
+            category: menuData.category.trim(),
+            imageUrl: menuData.imageUrl.trim(),
         };
 
         try {
             await axios.post(`${API_URL}/menu/create`, payload, {
                 withCredentials: true,
             });
-            setMenuMessage('Menu item created successfully!');
+            setMenuMessage(
+                'Menu created successfully! Awaiting admin approval.'
+            );
+            setMenuData({
+                itemName: '',
+                description: '',
+                price: '',
+                category: 'Breakfast',
+                imageUrl: '',
+            });
             fetchMenus();
         } catch (err) {
             console.error('Error creating menu:', err);
-            setMenuMessage('Failed to create menu item.');
+            const msg = err.response?.data?.message || 'Failed to create menu.';
+            if (err.response?.status === 400) {
+                setMenuMessage(msg);
+            } else if (err.response?.status === 403) {
+                setMenuMessage(msg);
+            } else {
+                setMenuMessage('Failed to create menu.');
+            }
         }
     };
 
@@ -229,7 +255,7 @@ const ChefDashboard = () => {
             <div className="container card mb-4 shadow-sm">
                 <div className="card-body">
                     <h4 className="mb-3 title">
-                        {editMenuId ? 'Update Product' : 'Create Product'}
+                        {editMenuId ? 'Update Item' : 'Create Item'}
                     </h4>
                     <div className="row g-3">
                         <div className="col-md-4">
@@ -334,7 +360,7 @@ const ChefDashboard = () => {
 
             <div className="container card shadow-sm">
                 <div className="card-body">
-                    <h4 className="mb-3 title">My Menu</h4>
+                    <h4 className="mb-3 title">My Item</h4>
                     <div className="row">
                         {menus.length > 0 ? (
                             menus.map((menu) => (
@@ -362,9 +388,26 @@ const ChefDashboard = () => {
                                             <div className="d-flex gap-2">
                                                 <button
                                                     className="btn btn-sm btn-warning"
-                                                    onClick={() =>
-                                                        setEditMenuId(menu._id)
-                                                    }
+                                                    onClick={() => {
+                                                        setEditMenuId(menu._id);
+                                                        setMenuData({
+                                                            itemName:
+                                                                menu.itemName ||
+                                                                '',
+                                                            description:
+                                                                menu.description ||
+                                                                '',
+                                                            price:
+                                                                menu.price ||
+                                                                '',
+                                                            category:
+                                                                menu.category ||
+                                                                'Breakfast',
+                                                            imageUrl:
+                                                                menu.imageUrl ||
+                                                                '',
+                                                        });
+                                                    }}
                                                 >
                                                     Edit
                                                 </button>
