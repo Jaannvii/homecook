@@ -36,6 +36,20 @@ const verifyChef = async (req, res) => {
     }
 };
 
+const getAllMenu = async (req, res) => {
+    try {
+        const menus = await Menu.find().populate('chefId', 'name email');
+        return res
+            .status(200)
+            .json({ message: 'Menus fetched successfully', menus });
+    } catch (err) {
+        return res.status(500).json({
+            message: 'Server error while fetching menus',
+            error: err.message,
+        });
+    }
+};
+
 const approveMenu = async (req, res) => {
     try {
         const menuId = req.params.menuId;
@@ -69,4 +83,4 @@ const getAllOrders = async (req, res) => {
     }
 };
 
-export { getAllChefs, verifyChef, approveMenu, getAllOrders };
+export { getAllChefs, verifyChef, getAllMenu, approveMenu, getAllOrders };

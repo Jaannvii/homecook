@@ -9,7 +9,13 @@ const ChefDashboard = () => {
     const [menus, setMenus] = useState([]);
 
     const [profileMessage, setProfileMessage] = useState('');
+    const [profileSuccess, setProfileSuccess] = useState('false');
+
     const [menuMessage, setMenuMessage] = useState('');
+    const [menuSuccess, setMenuSuccess] = useState('false');
+
+    const [menuDeleteMessage, setMenuDeleteMessage] = useState('');
+    const [menuDeleteSuccess, setMenuDeleteSuccess] = useState('false');
 
     const [formData, setFormData] = useState({
         name: '',
@@ -51,7 +57,8 @@ const ChefDashboard = () => {
                 },
             });
         } catch (err) {
-            console.error('Error fetching profile:', err);
+            setProfileMessage('Error fetching profile');
+            setProfileSuccess('false');
         }
     };
 
@@ -62,7 +69,8 @@ const ChefDashboard = () => {
             });
             setMenus(res.data.menus);
         } catch (err) {
-            console.error('Error fetching menus:', err);
+            setMenuMessage('Error fetching item');
+            setMenuSuccess('false');
         }
     };
 
@@ -78,10 +86,16 @@ const ChefDashboard = () => {
                 withCredentials: true,
             });
             setProfileMessage('Profile updated successfully!');
+            setProfileSuccess(true);
             fetchProfile();
         } catch (err) {
-            console.error('Error saving profile:', err);
-            setProfileMessage('Failed to save profile.');
+            setProfileMessage('Failed to update profile.');
+            setProfileSuccess(false);
+        } finally {
+            setTimeout(() => {
+                setProfileMessage('');
+                setProfileSuccess(null);
+            }, 3000);
         }
     };
 
@@ -110,8 +124,9 @@ const ChefDashboard = () => {
                 withCredentials: true,
             });
             setMenuMessage(
-                'Menu created successfully! Awaiting admin approval.'
+                'Item created successfully! Awaiting admin approval.'
             );
+            setMenuSuccess(true);
             setMenuData({
                 itemName: '',
                 description: '',
@@ -121,15 +136,22 @@ const ChefDashboard = () => {
             });
             fetchMenus();
         } catch (err) {
-            console.error('Error creating menu:', err);
-            const msg = err.response?.data?.message || 'Failed to create menu.';
+            const msg = err.response?.data?.message || 'Failed to create item.';
             if (err.response?.status === 400) {
                 setMenuMessage(msg);
+                setMenuSuccess(false);
             } else if (err.response?.status === 403) {
                 setMenuMessage(msg);
+                setMenuSuccess(false);
             } else {
-                setMenuMessage('Failed to create menu.');
+                setMenuMessage('Failed to create item.');
+                setMenuSuccess(false);
             }
+        } finally {
+            setTimeout(() => {
+                setMenuMessage('');
+                setMenuSuccess(null);
+            }, 3000);
         }
     };
 
@@ -147,23 +169,37 @@ const ChefDashboard = () => {
                 withCredentials: true,
             });
             setMenuMessage('Menu item updated successfully!');
+            setMenuSuccess(true);
             setEditMenuId(null);
             fetchMenus();
         } catch (err) {
-            console.error('Error updating menu:', err);
             setMenuMessage('Failed to update menu item.');
+            setMenuSuccess(false);
+        } finally {
+            setTimeout(() => {
+                setMenuMessage('');
+                setMenuSuccess(null);
+            }, 3000);
         }
     };
 
     const deleteMenu = async (id) => {
         try {
+            if (!window.confirm('Delete this menu item?')) return;
             await axios.delete(`${API_URL}/menu/delete/${id}`, {
                 withCredentials: true,
             });
+            setMenuDeleteMessage('Item deleted successfully');
+            setMenuDeleteSuccess(true);
             fetchMenus();
         } catch (err) {
-            console.error('Error deleting menu:', err);
-            setMenuMessage('Failed to delete menu item.');
+            setMenuDeleteMessage('Failed to delete item.');
+            setMenuDeleteSuccess(false);
+        } finally {
+            setTimeout(() => {
+                setMenuDeleteMessage('');
+                setMenuDeleteSuccess(null);
+            }, 3000);
         }
     };
 
@@ -173,8 +209,8 @@ const ChefDashboard = () => {
     }, []);
 
     return (
-        <div className="py-4 bgColor">
-            <h1 className="mb-4 text-center title">Chef Dashboard</h1>
+        <div className="bgColor">
+            <h1 className="py-4 text-center title">Chef Dashboard</h1>
 
             <div className="container card mb-4 shadow-sm">
                 <div className="card-body">
@@ -240,11 +276,9 @@ const ChefDashboard = () => {
                     </div>
                     {profileMessage && (
                         <p
-                            className={`mt-3 ${
-                                profileMessage.includes('success')
-                                    ? 'text-success'
-                                    : 'text-danger'
-                            }`}
+                            className={`text-center ${
+                                profileSuccess ? 'text-success' : 'text-danger'
+                            } mt-2 `}
                         >
                             {profileMessage}
                         </p>
@@ -340,17 +374,15 @@ const ChefDashboard = () => {
                                 }`}
                                 onClick={editMenuId ? updateMenu : createMenu}
                             >
-                                {editMenuId ? 'Update Menu' : 'Create Menu'}
+                                {editMenuId ? 'Update Item' : 'Create Item'}
                             </button>
                         </div>
                     </div>
                     {menuMessage && (
                         <p
-                            className={`mt-3 ${
-                                menuMessage.includes('success')
-                                    ? 'text-success'
-                                    : 'text-danger'
-                            }`}
+                            className={`text-center ${
+                                menuSuccess ? 'text-success' : 'text-danger'
+                            } mt-2`}
                         >
                             {menuMessage}
                         </p>
@@ -361,6 +393,17 @@ const ChefDashboard = () => {
             <div className="container card shadow-sm">
                 <div className="card-body">
                     <h4 className="mb-3 title">My Item</h4>
+                    {menuDeleteMessage && (
+                        <p
+                            className={`text-center ${
+                                menuDeleteSuccess
+                                    ? 'text-success'
+                                    : 'text-danger'
+                            } mt-2`}
+                        >
+                            {menuDeleteMessage}
+                        </p>
+                    )}
                     <div className="row">
                         {menus.length > 0 ? (
                             menus.map((menu) => (
@@ -376,9 +419,9 @@ const ChefDashboard = () => {
                                             }}
                                         />
                                         <div className="card-body">
-                                            <h5 className="card-title">
+                                            <h4 className="card-title">
                                                 {menu.itemName}
-                                            </h5>
+                                            </h4>
                                             <p className="card-text">
                                                 {menu.description}
                                             </p>

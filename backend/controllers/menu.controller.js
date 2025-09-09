@@ -166,8 +166,8 @@ const updateMenu = async (req, res) => {
         if (!menu) return res.status(404).json({ message: 'Menu not found' });
 
         if (
-            menu.chefId.toString() !== req.user.id &&
-            req.user.role !== 'Admin'
+            menu.chefId.toString() !== req.user._id.toString() &&
+            req.user.role !== 'Chef'
         ) {
             return res.status(403).json({ message: 'Not authorized' });
         }
@@ -197,14 +197,18 @@ const deleteMenu = async (req, res) => {
         const menu = await Menu.findById(req.params.id);
         if (!menu) return res.status(404).json({ message: 'Menu not found' });
 
-        if (
-            menu.chefId.toString() !== req.user.id &&
-            req.user.role !== 'Admin'
-        ) {
-            return res.status(403).json({ message: 'Not authorized' });
+        const chef = await Chef.findOne({ userId: req.user._id });
+
+        const isOwner = chef && menu.chefId.toString() === chef._id.toString();
+        const isAdmin = req.user?.role === 'Admin';
+
+        if (!isOwner && !isAdmin) {
+            return res
+                .status(403)
+                .json({ message: 'Not authorized to delete this menu' });
         }
 
-        await menu.deleteOne();
+        await Menu.findByIdAndDelete(menu._id);
         return res.status(201).json({ message: 'Menu removed successfully' });
     } catch (err) {
         return res.status(500).json({

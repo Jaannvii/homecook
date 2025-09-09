@@ -54,7 +54,7 @@ const MainPage = () => {
             <section id="meal" className="py-5">
                 <div className="container">
                     <h2 className="text-center mb-5 fw-bold title">
-                        Explore Meal Categories
+                        Explore Menu
                     </h2>
                     <div className="row">
                         {categories.length > 0 ? (
@@ -104,7 +104,7 @@ const MainPage = () => {
                             ))
                         ) : (
                             <div className="text-center text-muted">
-                                No categories found.
+                                No menu found.
                             </div>
                         )}
                     </div>

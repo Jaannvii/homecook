@@ -2,6 +2,7 @@ import express from 'express';
 import {
     getAllChefs,
     verifyChef,
+    getAllMenu,
     approveMenu,
     getAllOrders,
 } from '../controllers/admin.controller.js';
@@ -10,6 +11,7 @@ import { isLoggedIn, authorize } from '../middlewares/auth.middleware.js';
 const router = express.Router();
 
 router.put('/verify-chef/:chefId', isLoggedIn, authorize('Admin'), verifyChef);
+router.get('/menu', isLoggedIn, authorize('Admin'), getAllMenu);
 router.put(
     '/approve-menu/:menuId',
     isLoggedIn,

@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema(
             {
                 food: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Food',
+                    ref: 'Menu',
                     required: true,
                 },
                 quantity: {
@@ -43,7 +43,7 @@ const orderSchema = new mongoose.Schema(
         },
         paymentMethod: {
             type: String,
-            enum: ['Card', 'UPI', 'NetBanking', 'Wallet', 'COD'],
+            enum: ['Card', 'UPI', 'NetBanking', 'Wallet', 'COD', 'Razorpay'],
             required: true,
         },
         paymentStatus: {

@@ -4,8 +4,12 @@ const createOrder = async (req, res) => {
     try {
         const { items, totalPrice, deliveryAddress, paymentMethod } = req.body;
 
+        if (!items || items.length === 0) {
+            return res.status(400).json({ message: 'No items in order' });
+        }
+
         const newOrder = new Order({
-            customer: req.user.id,
+            customer: req.user?._id,
             items,
             totalPrice,
             deliveryAddress,
@@ -13,6 +17,7 @@ const createOrder = async (req, res) => {
         });
 
         await newOrder.save();
+
         return res.status(201).json({
             message: 'Order created successfully',
             order: newOrder,
@@ -27,12 +32,29 @@ const createOrder = async (req, res) => {
 
 const getUserOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ customer: req.user.id }).populate(
-            'items.food',
-            'itemName price'
-        );
+        const orders = await Order.find({ customer: req.user._id })
+            .populate('items.food', 'itemName price')
+            .populate('customer', 'name email');
         return res.status(201).json({
             message: 'Orders fetched successfully',
+            orders,
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: 'Server error while fetching orders',
+            error: err.message,
+        });
+    }
+};
+
+const getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.find()
+            .populate('items.menu', 'itemName price')
+            .populate('customer', 'name email');
+
+        return res.status(200).json({
+            message: 'All orders fetched successfully',
             orders,
         });
     } catch (err) {
@@ -120,6 +142,7 @@ const deleteOrder = async (req, res) => {
 export {
     createOrder,
     getUserOrders,
+    getAllOrders,
     getOrderById,
     updateOrderStatus,
     deleteOrder,

@@ -9,6 +9,15 @@ const AdminDashboard = () => {
     const [menus, setMenus] = useState([]);
     const [orders, setOrders] = useState([]);
 
+    const [chefMsg, setChefMsg] = useState('');
+    const [chefSuccess, setChefSuccess] = useState(false);
+
+    const [menuMsg, setMenuMsg] = useState('');
+    const [menuSuccess, setMenuSuccess] = useState(false);
+
+    const [orderMsg, setOrderMsg] = useState('');
+    const [orderSuccess, setOrderSuccess] = useState(false);
+
     const fetchChefs = async () => {
         try {
             const res = await axios.get(`${API_URL}/admin/chefs`, {
@@ -16,7 +25,8 @@ const AdminDashboard = () => {
             });
             setChefs(Array.isArray(res.data) ? res.data : res.data.chefs || []);
         } catch (err) {
-            console.error('Error fetching chefs:', err);
+            setChefMsg('Error fetching chefs');
+            setChefSuccess(false);
         }
     };
 
@@ -27,9 +37,17 @@ const AdminDashboard = () => {
                 {},
                 { withCredentials: true }
             );
+            setChefMsg('Chef verified successfully');
+            setChefSuccess(true);
             fetchChefs();
         } catch (err) {
-            console.error('Error verifying chef:', err);
+            setChefMsg('Error verifying chef');
+            setChefSuccess(false);
+        } finally {
+            setTimeout(() => {
+                setChefMsg('');
+                setChefSuccess(null);
+            }, 3000);
         }
     };
 
@@ -44,20 +62,29 @@ const AdminDashboard = () => {
             await axios.delete(`${API_URL}/chef/delete/${id}`, {
                 withCredentials: true,
             });
+            setChefMsg('Chef deleted successfully');
+            setChefSuccess(true);
             fetchChefs();
         } catch (err) {
-            console.error('Error deleting chef:', err);
+            setChefMsg('Error deleting chef');
+            setChefSuccess(false);
+        } finally {
+            setTimeout(() => {
+                setChefMsg('');
+                setChefSuccess(null);
+            }, 3000);
         }
     };
 
     const fetchMenus = async () => {
         try {
-            const res = await axios.get(`${API_URL}/menu/`, {
+            const res = await axios.get(`${API_URL}/admin/menu/`, {
                 withCredentials: true,
             });
             setMenus(Array.isArray(res.data) ? res.data : res.data.menus || []);
         } catch (err) {
-            console.error('Error fetching menus:', err);
+            setMenuMsg('Error fetching items');
+            setMenuSuccess(false);
         }
     };
 
@@ -68,9 +95,17 @@ const AdminDashboard = () => {
                 {},
                 { withCredentials: true }
             );
+            setMenuMsg('Item approved successfully');
+            setMenuSuccess(true);
             fetchMenus();
         } catch (err) {
-            console.error('Error approving menu:', err);
+            setMenuMsg('Error approving item');
+            setMenuSuccess(false);
+        } finally {
+            setTimeout(() => {
+                setMenuMsg('');
+                setMenuSuccess(null);
+            }, 3000);
         }
     };
 
@@ -80,9 +115,17 @@ const AdminDashboard = () => {
             await axios.delete(`${API_URL}/menu/delete/${id}`, {
                 withCredentials: true,
             });
+            setMenuMsg('Item deleted successfully');
+            setMenuSuccess(true);
             fetchMenus();
         } catch (err) {
-            console.error('Error deleting menu:', err);
+            setMenuMsg('Error deleting item');
+            setMenuSuccess(false);
+        } finally {
+            setTimeout(() => {
+                setMenuMsg('');
+                setMenuSuccess(null);
+            }, 3000);
         }
     };
 
@@ -95,7 +138,8 @@ const AdminDashboard = () => {
                 Array.isArray(res.data) ? res.data : res.data.orders || []
             );
         } catch (err) {
-            console.error('Error fetching orders:', err);
+            setOrderMsg('Error fetching orders');
+            setOrderSuccess(false);
         }
     };
 
@@ -106,9 +150,17 @@ const AdminDashboard = () => {
                 { status },
                 { withCredentials: true }
             );
+            setOrderMsg('Order status updated');
+            setOrderSuccess(true);
             fetchOrders();
         } catch (err) {
-            console.error('Error updating order status:', err);
+            setOrderMsg('Error updating order status');
+            setOrderSuccess(false);
+        } finally {
+            setTimeout(() => {
+                setOrderMsg('');
+                setOrderSuccess(null);
+            }, 3000);
         }
     };
 
@@ -118,9 +170,17 @@ const AdminDashboard = () => {
             await axios.delete(`${API_URL}/order/delete/${id}`, {
                 withCredentials: true,
             });
+            setOrderMsg('Order deleted successfully');
+            setOrderSuccess(true);
             fetchOrders();
         } catch (err) {
-            console.error('Error deleting order:', err);
+            setOrderMsg('Error deleting order');
+            setOrderSuccess(false);
+        } finally {
+            setTimeout(() => {
+                setOrderMsg('');
+                setOrderSuccess(null);
+            }, 3000);
         }
     };
 
@@ -131,11 +191,20 @@ const AdminDashboard = () => {
     }, []);
 
     return (
-        <div className="py-4 bgColor">
-            <h1 className="mb-4 text-center title">Admin Dashboard</h1>
+        <div className="bgColor">
+            <h1 className="py-4 text-center title">Admin Dashboard</h1>
 
             <section className="container mb-5">
                 <h4 className="mb-3 title">Chef Management</h4>
+                {chefMsg && (
+                    <p
+                        className={`text-center ${
+                            chefSuccess ? 'text-success' : 'text-danger'
+                        } mt-2`}
+                    >
+                        {chefMsg}
+                    </p>
+                )}
                 <div className="table-responsive">
                     <table className="table table-striped table-hover align-middle">
                         <thead>
@@ -149,11 +218,13 @@ const AdminDashboard = () => {
                             {chefs.length > 0 ? (
                                 chefs.map((chef) => (
                                     <tr key={chef._id}>
-                                        <td>
+                                        <td className="text-center">
                                             {chef.name || chef.userName || '—'}
                                         </td>
-                                        <td>{chef.isVerified ? '✅' : '❌'}</td>
-                                        <td>
+                                        <td className="text-center">
+                                            {chef.isVerified ? '✅' : '❌'}
+                                        </td>
+                                        <td className="text-center">
                                             {!chef.isVerified && (
                                                 <button
                                                     className="btn btn-sm btn-success me-2"
@@ -161,7 +232,7 @@ const AdminDashboard = () => {
                                                         verifyChef(chef._id)
                                                     }
                                                 >
-                                                    Verify Chef
+                                                    Verify
                                                 </button>
                                             )}
                                             <button
@@ -170,7 +241,7 @@ const AdminDashboard = () => {
                                                     deleteChef(chef._id)
                                                 }
                                             >
-                                                Delete Chef
+                                                Delete
                                             </button>
                                         </td>
                                     </tr>
@@ -188,13 +259,22 @@ const AdminDashboard = () => {
             </section>
 
             <section className="container mb-5">
-                <h4 className="mb-3 title">Menu Approval</h4>
+                <h4 className="mb-3 title">Item Approval</h4>
+                {menuMsg && (
+                    <p
+                        className={`text-center ${
+                            menuSuccess ? 'text-success' : 'text-danger'
+                        } mt-2`}
+                    >
+                        {menuMsg}
+                    </p>
+                )}
                 <div className="table-responsive">
                     <table className="table table-striped table-hover align-middle">
                         <thead>
                             <tr>
-                                <th className="text-center py-2">Item</th>
-                                <th className="text-center py-2">Chef</th>
+                                <th className="text-center py-2">Chef Name</th>
+                                <th className="text-center py-2">Item Name</th>
                                 <th className="text-center py-2">Approved</th>
                                 <th className="text-center py-2">Actions</th>
                             </tr>
@@ -203,14 +283,18 @@ const AdminDashboard = () => {
                             {menus.length > 0 ? (
                                 menus.map((menu) => (
                                     <tr key={menu._id}>
-                                        <td>{menu.itemName}</td>
-                                        <td>
+                                        <td className="text-center">
                                             {menu.chefId?.name ||
                                                 menu.chefName ||
                                                 '—'}
                                         </td>
-                                        <td>{menu.isApproved ? '✅' : '❌'}</td>
-                                        <td>
+                                        <td className="text-center">
+                                            {menu.itemName}
+                                        </td>
+                                        <td className="text-center">
+                                            {menu.isApproved ? '✅' : '❌'}
+                                        </td>
+                                        <td className="text-center">
                                             {!menu.isApproved && (
                                                 <button
                                                     className="btn btn-sm btn-primary me-2"
@@ -246,13 +330,26 @@ const AdminDashboard = () => {
 
             <section className="container mb-5">
                 <h4 className="mb-3 title">Order Management</h4>
+                {orderMsg && (
+                    <p
+                        className={`text-center ${
+                            orderSuccess ? 'text-success' : 'text-danger'
+                        } mt-2`}
+                    >
+                        {orderMsg}
+                    </p>
+                )}
                 <div className="table-responsive">
                     <table className="table table-striped table-hover align-middle">
                         <thead>
                             <tr>
                                 <th className="text-center py-2">Order ID</th>
-                                <th className="text-center py-2">Customer</th>
-                                <th className="text-center py-2">Menu</th>
+                                <th className="text-center py-2">
+                                    Customer Name
+                                </th>
+                                <th className="text-center py-2">
+                                    Item Quantity
+                                </th>
                                 <th className="text-center py-2">Status</th>
                                 <th className="text-center py-2">
                                     Change Status
@@ -264,19 +361,27 @@ const AdminDashboard = () => {
                             {orders.length > 0 ? (
                                 orders.map((order) => (
                                     <tr key={order._id}>
-                                        <td>{order._id}</td>
-                                        <td>
-                                            {order.customerName ||
-                                                order.userName ||
-                                                '—'}
+                                        <td className="text-center">
+                                            {order._id}
                                         </td>
-                                        <td>
-                                            {order.menuId?.itemName ||
-                                                order.menuName ||
-                                                '—'}
+                                        <td className="text-center">
+                                            {order.customer?.name || '—'}
                                         </td>
-                                        <td>{order.status}</td>
-                                        <td>
+                                        <td className="text-center">
+                                            {order.items &&
+                                            order.items.length > 0
+                                                ? order.items.map((item) => (
+                                                      <div key={item._id}>
+                                                          {item.menu?.itemName}{' '}
+                                                          × {item.quantity}
+                                                      </div>
+                                                  ))
+                                                : '—'}
+                                        </td>
+                                        <td className="text-center">
+                                            {order.status}
+                                        </td>
+                                        <td className="text-center">
                                             <select
                                                 className="form-select form-select-sm"
                                                 value={order.status}
@@ -307,7 +412,7 @@ const AdminDashboard = () => {
                                                 </option>
                                             </select>
                                         </td>
-                                        <td>
+                                        <td className="text-center">
                                             <button
                                                 className="btn btn-sm btn-danger"
                                                 onClick={() =>

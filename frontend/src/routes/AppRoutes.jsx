@@ -6,6 +6,7 @@ import MenuPage from '../pages/Menu.jsx';
 import AdminDashboard from '../pages/Dashboards/AdminDashboard.jsx';
 import ChefDashboard from '../pages/Dashboards/ChefDashboard.jsx';
 import Cart from '../pages/Cart.jsx';
+import Checkout from '../pages/Checkout.jsx';
 
 const AppRoutes = () => {
     return (
@@ -17,6 +18,7 @@ const AppRoutes = () => {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/chef/dashboard" element={<ChefDashboard />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
         </Routes>
     );
 };
