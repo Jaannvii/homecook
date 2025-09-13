@@ -33,7 +33,7 @@ const createOrder = async (req, res) => {
 const getUserOrders = async (req, res) => {
     try {
         const orders = await Order.find({ customer: req.user._id })
-            .populate('items.food', 'itemName price')
+            .populate('items.food', 'itemName imageUrl price')
             .populate('customer', 'name email');
         return res.status(201).json({
             message: 'Orders fetched successfully',
@@ -139,6 +139,30 @@ const deleteOrder = async (req, res) => {
     }
 };
 
+const cancelOrder = async (req, res) => {
+    try {
+        const order = await Order.findOne({
+            _id: req.params.id,
+            customer: req.user._id,
+        });
+        if (!order) return res.status(404).json({ message: 'Order not found' });
+
+        if (order.status === 'Delivered')
+            return res
+                .status(400)
+                .json({ message: 'Delivered order cannot be cancelled' });
+
+        order.status = 'Cancelled';
+        await order.save();
+
+        return res.json({ message: 'Order cancelled successfully', order });
+    } catch (err) {
+        return res
+            .status(500)
+            .json({ message: 'Server error', error: err.message });
+    }
+};
+
 export {
     createOrder,
     getUserOrders,
@@ -146,4 +170,5 @@ export {
     getOrderById,
     updateOrderStatus,
     deleteOrder,
+    cancelOrder,
 };

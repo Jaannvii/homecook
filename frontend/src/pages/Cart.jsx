@@ -67,7 +67,7 @@ const Cart = () => {
 
     return (
         <div className="bgColor">
-            <h1 className="text-center py-4 mb-2 title">Your Cart</h1>
+            <h1 className="text-center py-4 title">Your Cart</h1>
             <div className="py-4 container bg-light rounded-3">
                 {cart.length === 0 ? (
                     <p className="text-center text-muted">Your cart is empty</p>

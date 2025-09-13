@@ -116,7 +116,7 @@ const Navbar = () => {
                                             <li>
                                                 <Link
                                                     className="dropdown-item"
-                                                    to="/order/tracking"
+                                                    to="/track-order"
                                                 >
                                                     Track Order
                                                 </Link>

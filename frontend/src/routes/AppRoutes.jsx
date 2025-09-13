@@ -7,6 +7,8 @@ import AdminDashboard from '../pages/Dashboards/AdminDashboard.jsx';
 import ChefDashboard from '../pages/Dashboards/ChefDashboard.jsx';
 import Cart from '../pages/Cart.jsx';
 import Checkout from '../pages/Checkout.jsx';
+import TrackOrder from '../pages/TrackOrder.jsx';
+import PastHistory from '../pages/PastHistory.jsx';
 
 const AppRoutes = () => {
     return (
@@ -19,6 +21,8 @@ const AppRoutes = () => {
             <Route path="/chef/dashboard" element={<ChefDashboard />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/track-order" element={<TrackOrder />} />
+            <Route path="/past-history" element={<PastHistory />} />
         </Routes>
     );
 };

@@ -347,9 +347,7 @@ const AdminDashboard = () => {
                                 <th className="text-center py-2">
                                     Customer Name
                                 </th>
-                                <th className="text-center py-2">
-                                    Item Quantity
-                                </th>
+                                <th className="text-center py-2">Item</th>
                                 <th className="text-center py-2">Status</th>
                                 <th className="text-center py-2">
                                     Change Status
@@ -372,7 +370,7 @@ const AdminDashboard = () => {
                                             order.items.length > 0
                                                 ? order.items.map((item) => (
                                                       <div key={item._id}>
-                                                          {item.menu?.itemName}{' '}
+                                                          {item.food?.itemName}{' '}
                                                           × {item.quantity}
                                                       </div>
                                                   ))
