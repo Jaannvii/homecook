@@ -152,8 +152,7 @@ const cancelOrder = async (req, res) => {
                 .status(400)
                 .json({ message: 'Delivered order cannot be cancelled' });
 
-        order.status = 'Cancelled';
-        await order.save();
+        await Order.findByIdAndDelete(order._id);
 
         return res.json({ message: 'Order cancelled successfully', order });
     } catch (err) {

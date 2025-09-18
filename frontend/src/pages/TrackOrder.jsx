@@ -57,6 +57,15 @@ const TrackOrder = () => {
         <div className="bgColor">
             <h1 className="py-4 text-center title">Track Your Orders</h1>
             <div className="container">
+                {message && (
+                    <p
+                        className={`text-center ${
+                            success ? 'text-success' : 'text-danger'
+                        } `}
+                    >
+                        {message}
+                    </p>
+                )}
                 {orders.length === 0 ? (
                     <p className="text-center text-muted">No active orders.</p>
                 ) : (
@@ -132,18 +141,6 @@ const TrackOrder = () => {
                                             Cancel Order
                                         </button>
                                     )}
-
-                                {message && (
-                                    <p
-                                        className={`text-center ${
-                                            success
-                                                ? 'text-success'
-                                                : 'text-danger'
-                                        } `}
-                                    >
-                                        {message}
-                                    </p>
-                                )}
                             </div>
                         </div>
                     ))
