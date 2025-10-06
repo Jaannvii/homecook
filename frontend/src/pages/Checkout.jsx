@@ -77,7 +77,7 @@ const Checkout = () => {
 
                 try {
                     const res = await fetch(
-                        'http://localhost:5000/api/homecook/order/create',
+                        'https://homecook-dxhd.onrender.com/api/homecook/order/create',
                         {
                             method: 'POST',
                             headers: {
